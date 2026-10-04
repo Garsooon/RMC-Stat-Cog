@@ -101,8 +101,8 @@ class RMCStats(commands.Cog):
             return data["id"]
         return None
 
-    @commands.hybrid_command(name="rmcstats")
-    async def rmcstats(self, ctx: commands.Context, player: str):
+    @commands.hybrid_command(name="stats")
+    async def stats(self, ctx: commands.Context, player: str):
         """Show RetroMC stats for a player (username or UUID)."""
         async with ctx.typing():
             try:
@@ -144,8 +144,8 @@ class RMCStats(commands.Cog):
         embed.set_thumbnail(url=HEAD_URL.format(name))
         await ctx.send(embed=embed)
 
-    @commands.hybrid_command(name="rmctop")
-    async def rmctop(self, ctx: commands.Context, stat: str = "playTime", limit: int = 10):
+    @commands.hybrid_command(name="leaderboard")
+    async def leaderboard(self, ctx: commands.Context, stat: str = "playTime", limit: int = 10):
         """Show a RetroMC leaderboard.
 
         Stats: playTime, joinCount, creaturesKilled, playersKilled, blocksPlaced,
@@ -177,7 +177,7 @@ class RMCStats(commands.Cog):
         embed.set_thumbnail(url=HEAD_URL.format(data["entries"][0]["username"]))
         await ctx.send(embed=embed)
 
-    @rmctop.autocomplete("stat")
+    @leaderboard.autocomplete("stat")
     async def _stat_autocomplete(self, interaction: discord.Interaction, current: str):
         return [
             discord.app_commands.Choice(name=label, value=k)
