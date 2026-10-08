@@ -28,7 +28,28 @@ LEADERBOARD_KEYS = {
     "itemsDropped": "Items Dropped",
     "trustScore": "Trust Score",
 }
-KEYS_LOWER = {k.lower(): k for k in LEADERBOARD_KEYS}
+KEY_ALIASES = {
+    "playTime": ["time", "playtime", "hours"],
+    "joinCount": ["joins", "join", "logins"],
+    "creaturesKilled": ["mobs", "mobkills", "kills", "creatures"],
+    "playersKilled": ["pvp", "playerkills", "players"],
+    "blocksPlaced": ["placed", "placements", "built"],
+    "blocksDestroyed": ["destroyed", "broken", "mined", "blocksbroken"],
+    "metersTraveled": ["distance", "meters", "traveled", "travelled"],
+    "playerDeaths": ["deaths", "death", "died"],
+    "itemsDropped": ["drops", "dropped", "items"],
+    "trustScore": ["trust"],
+}
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"[\s_\-]+", "", text).lower()
+
+
+KEYS_LOWER = {}
+for _k, _label in LEADERBOARD_KEYS.items():
+    for _name in (_k, _label, *KEY_ALIASES.get(_k, [])):
+        KEYS_LOWER[_norm(_name)] = _k
 
 
 def fmt_duration(seconds: int) -> str:
@@ -150,8 +171,10 @@ class RMCStats(commands.Cog):
 
         Stats: playTime, joinCount, creaturesKilled, playersKilled, blocksPlaced,
         blocksDestroyed, metersTraveled, playerDeaths, itemsDropped, trustScore
+
+        Aliases also work, e.g. deaths, pvp, mobs, distance, trust, joins.
         """
-        key = KEYS_LOWER.get(stat.lower())
+        key = KEYS_LOWER.get(_norm(stat))
         if not key:
             return await ctx.send("Unknown stat. Options: " + ", ".join(f"`{k}`" for k in LEADERBOARD_KEYS))
         limit = max(1, min(limit, 25))
